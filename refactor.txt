@@ -1,0 +1,72 @@
+Look through the project in the current directory and see if you can make some aspect of it more elegant. More logical or simpler. A good indicator if a change would make the codebase better is when the line-count decreases. Of course not by sheeningans like cramming more code into one line. But by finding code that is bloated or duplicated or would benefit from doing something via a different approach. Find one such improvement and implement it.
+
+Do not commit your changes.
+
+Go about this like this: Pick a random file and think about it. Look for an aspect related to that file that can be simplified. Maybe something in the file itself. Or something related to how other files use that file. Or the grand concept of why this file is in the codebase at all. If you cannot find something to simplify this way, pick another file and continue from there.
+
+After you implemented your changes, run
+../git-complexity-diff.sh
+It will show you the how you changed the number of lines, chars and long lines (lines over 60 chars in width). If any of these numbers is greater than 0, do a "git reset --hard" and start over. Adding chars, lines or long lines means adding complexity and that is the opposite of what we want to achieve.
+
+General rules:
+
+- Do not inline code and remove the function to save lines. While this
+  saves the function definition, it makes the code less expressive. As
+  the function usually has a descriptive name of what it does.
+
+- Do not de-duplicate lines in config files. Even if multiple
+  config files contain the same lines, do not try to import
+  those lines to save lines. That would make working with
+  the config files awkward in the future.
+
+- Never improve more than one aspect of the code.
+
+Some rules for Javascript:
+
+- Do not replace "a['x']" with "a.x" if "x" is a dynamically generated
+  property. We sometimes use the [] syntax to indicate that this is a property
+  that was dynamically generated.
+
+- Do not combine multiple if statements. For example, do not replace
+    if (x) f();
+    if (y) f();
+  With
+    if (x || y) f();
+  While shorter, if the author used multiple if statements, they
+  did this for readability reasons.
+
+- Do not replace loops with array methods such as map(). The
+  array method might make shorter code, but it is harder to read.
+
+- Do not shorten "if" constructs with the ? operator.
+  The construct "if .." is easier to grasp.
+
+- Never use the conditional (ternary) operator (condition ? a : b)
+  in place of an if statement.
+  For example instead of
+    const pos = e.touches ? e.touches[0] : e;
+    x = pos.clientX;
+  Write:
+    let pos = e;
+    if (e.touches) pos = e.touches[0];
+    x = pos.clientX
+
+- Keep parentheses when they clarify grouping or intent.
+    Example:
+      if ((a===b) && !c)
+    Is better than
+      if (a===b && !c)
+    Because one does not need to juggle operator precedence
+    in ones head when reading it.
+
+- Do not replace "if this=that return true; return false" type
+  constructs with "return this===that". Especially when the
+  compared values are calculated like "if (some<thing) return
+  true; return false" the "if" construct is easier to read.
+
+- Do not remove early returns and switch to an approach that
+  executes more code if it could return earlier. Early returns
+  when a condition is met greatly enhance readability of the code.
+
+- Do not replace "let" with "const". I saw you do this a few times.
+  This does not make the code simpler.
