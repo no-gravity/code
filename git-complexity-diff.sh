@@ -27,9 +27,12 @@ removed_lines=$(working_diff --numstat |
 print_number $((added_lines - removed_lines))
 
 echo -n 'Long lines: '
-current_long=$(working_diff --unified=0 |
+added_long=$(working_diff --unified=0 |
     grep '^+' | grep -v '^+++' | cut -c2- |
     awk 'length > 60 { count++ }
         END { print count+0 }')
-last_long=$(git show HEAD --unified=0 | grep '^+' | grep -v '^+++' | cut -c2- | awk 'length > 60 { count++ } END { print count+0 }')
-print_number $((current_long - last_long))
+removed_long=$(working_diff --unified=0 |
+    grep '^-' | grep -v '^---' | cut -c2- |
+    awk 'length > 60 { count++ }
+        END { print count+0 }')
+print_number $((added_long - removed_long))
