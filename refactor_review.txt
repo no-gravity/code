@@ -1,0 +1,3 @@
+Look at the output of "git diff" and evaluate
+whether the changes are a good refactoring without
+side-effects.
